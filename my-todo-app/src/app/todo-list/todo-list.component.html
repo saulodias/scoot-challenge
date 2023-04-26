@@ -11,7 +11,7 @@
             <th>Due Date</th>
             <th>Priority</th>
             <th>
-                <p-button hidden type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+                <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
             </th>
         </tr>
         <tr>
@@ -28,7 +28,7 @@
             <th>
                 <p-columnFilter field="priority" matchMode="contains" [showMenu]="false">
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                        <p-dropdown [options]="priorityOptions" [ngModel]="priorityFilter"
+                        <p-dropdown [options]="priorityFilterOptions" [ngModel]="priorityFilter"
                             (ngModelChange)="filter($event.code)" optionLabel="name">
                             <ng-template pTemplate="item" let-option>
                                 <span *ngIf="option.code == null; else elseBlock">All</span>
@@ -56,9 +56,34 @@
                     </ng-template>
                 </p-cellEditor>
             </td>
-            <td>{{todo.dueDate}}</td>
             <td>
-                <p-tag [value]="getPriorityText(todo.priority)" [severity]="getPrioritySeverity(todo.priority)"></p-tag>
+                <p-cellEditor style="width: 100%;">
+                    <ng-template pTemplate="input">
+                        <p-calendar [(ngModel)]="todo.dueDate"></p-calendar>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{ todo.dueDate | date }}
+                    </ng-template>
+                </p-cellEditor>
+
+            </td>
+            <td>
+
+                <p-cellEditor style="width: 100%;">
+                    <ng-template pTemplate="input">
+                        <p-dropdown [options]="priorityOptions" [(ngModel)]="todo.priority" optionLabel="name"
+                            optionValue="code">
+                            <ng-template pTemplate="item" let-option>
+                                <p-tag [value]="getPriorityText(option.code)"
+                                    [severity]="getPrioritySeverity(option.code)"></p-tag>
+                            </ng-template>
+                        </p-dropdown>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        <p-tag [value]="getPriorityText(todo.priority)"
+                            [severity]="getPrioritySeverity(todo.priority)"></p-tag>
+                    </ng-template>
+                </p-cellEditor>
             </td>
             <td>
                 <div class="flex align-items-center justify-content-center gap-2">

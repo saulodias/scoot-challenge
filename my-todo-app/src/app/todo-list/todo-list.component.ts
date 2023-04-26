@@ -22,10 +22,14 @@ export class TodoListComponent implements OnInit {
   priorityFilter: PriorityEnum | null = null;
 
   priorityOptions = [
-    { name: 'All', code: null },
     { name: 'High', code: PriorityEnum.HIGH },
     { name: 'Normal', code: PriorityEnum.NORMAL },
     { name: 'Low', code: PriorityEnum.LOW },
+  ];
+
+  priorityFilterOptions = [
+    { name: 'All', code: null },
+    ...this.priorityOptions
   ];
 
   clonedTodos: { [key: string]: Todo } = {};
@@ -60,7 +64,7 @@ export class TodoListComponent implements OnInit {
           return {
             id: todo.id,
             description: todo.description,
-            dueDate: new Date(todo.dueDate).toLocaleDateString(),
+            dueDate: new Date(todo.dueDate),
             priority: todo.priority,
           };
         });
@@ -138,6 +142,12 @@ export class TodoListComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept,
     });
+  }
+
+  priorityChange(priority: number, todo: Todo) {
+    if (todo.id == null) throw idError;
+
+    this.clonedTodos[todo.id].priority =  priority;
   }
 
   onRowEditCancel(todo: Todo, index: number) {

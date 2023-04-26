@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { MessageService } from 'primeng/api';
+import { CalendarModule } from 'primeng/calendar';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { MessageService } from 'primeng/api';
     FormsModule,
     ButtonModule,
     DropdownModule,
+    CalendarModule,
     TableModule,
     TagModule
   ],

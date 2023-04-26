@@ -89,6 +89,10 @@ router.put("/:id", (req, res) => {
       updates.push("description = ?");
       values.push(description);
     }
+    if (dueDate) {
+      updates.push("dueDate = ?");
+      values.push(new Date(dueDate));
+    }
     if (priority !== undefined) {
       updates.push("priority = ?");
       values.push(priority);

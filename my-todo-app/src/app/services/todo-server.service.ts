@@ -37,8 +37,12 @@ export class TodoServerService {
     });
   }
 
-  updateTodo(id: string, data: Todo) {
+  updateTodo(id: string, todo: Todo) {
     const url = `${this.API_URL}/${id}`;
+    const dueDate = (todo.dueDate as Date).getTime();
+
+    const data = { ...todo, dueDate };
+
     return this.http.put<{ message: string }>(url, data);
   }
 
