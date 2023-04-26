@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +8,6 @@ import { MessageService } from 'primeng/api';
 export class AppComponent {
   title = 'my-todo-app';
 
-  constructor(private messageService: MessageService) {}
+  constructor(
+  ) {}
 }

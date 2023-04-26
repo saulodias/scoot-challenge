@@ -70,6 +70,9 @@
                     <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
                         (click)="onRowEditCancel(todo, index)"
                         class="p-button-rounded p-button-text p-button-danger"></button>
+                    <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash" (click)="deleteTodo(todo)"
+                        class="p-button-rounded p-button-text p-button-warning"></button>
+
                 </div>
             </td>
         </tr>

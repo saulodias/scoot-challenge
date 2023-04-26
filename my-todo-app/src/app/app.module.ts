@@ -11,12 +11,24 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, AppRoutingModule, HttpClientModule, MessageModule, ToastModule, TodoListModule],
-  providers: [TodoServerService, MessageService],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    HttpClientModule,
+    MessageModule,
+    ConfirmDialogModule,
+    DialogModule,
+    ToastModule,
+    TodoListModule,
+  ],
+  providers: [TodoServerService, MessageService, ConfirmationService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

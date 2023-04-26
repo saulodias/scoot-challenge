@@ -39,6 +39,11 @@ export class TodoServerService {
 
   updateTodo(id: string, data: Todo) {
     const url = `${this.API_URL}/${id}`;
-    return this.http.put<{ message: string}>(url, data);
+    return this.http.put<{ message: string }>(url, data);
+  }
+
+  deleteTodo(id: string) {
+    const url = `${this.API_URL}/${id}`;
+    return this.http.delete<{ message: string }>(url);
   }
 }

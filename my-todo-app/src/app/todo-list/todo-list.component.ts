@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import Todo from '../interfaces/todo.interface';
 import { TodoServerService } from '../services/todo-server.service';
 import PriorityEnum from '../enums/priority.enum';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 const idError = new Error('A valid id must be provided.');
 
@@ -32,7 +32,8 @@ export class TodoListComponent implements OnInit {
 
   constructor(
     private todoServerService: TodoServerService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit() {}
@@ -113,6 +114,29 @@ export class TodoListComponent implements OnInit {
       });
 
       this.loadTodos();
+    });
+  }
+
+  deleteTodo(todo: Todo) {
+    const accept = () => {
+      if (todo.id == null) throw idError;
+
+      this.todoServerService.deleteTodo(todo.id).subscribe(() => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Info',
+          detail: 'Sucessfully deleted item.',
+        });
+
+        this.loadTodos();
+      });
+    };
+
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this item?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept,
     });
   }
 
