@@ -33,9 +33,8 @@ router.post("/", (req, res) => {
 
 // Get all todos with pagination and filtering
 router.get("/", (req, res) => {
-  const page = parseInt(req.query.page) || 1;
+  const offset = parseInt(req.query.offset) || 0;
   const limit = parseInt(req.query.limit) || 10;
-  const offset = (page - 1) * limit;
   let sql = "SELECT * FROM todos";
   let params = [];
   const description = req.query.description;
@@ -50,14 +49,29 @@ router.get("/", (req, res) => {
     sql += " WHERE priority = ?";
     params = [priority];
   }
-  sql += ` ORDER BY dueDate LIMIT ? OFFSET ?`;
-  params.push(limit, offset);
-  db.all(sql, params, (err, rows) => {
+  let countSql = `SELECT COUNT(*) as total FROM todos `;
+  const subStringStart = sql.indexOf("WHERE");
+  if (subStringStart > -1) {
+    countSql += sql.substring(subStringStart);
+  }
+  const preparedSql = db.prepare(`${sql} ORDER BY dueDate LIMIT ? OFFSET ?`);
+  const preparedCountSql = db.prepare(countSql);
+
+  preparedSql.all([...params, limit, offset], (err, rows) => {
     if (err) {
       console.error(err.message);
       res.status(500).json({ error: "Internal server error" });
     } else {
-      res.json(rows);
+      preparedCountSql.get(params, (err, result) => {
+        if (err) {
+          console.error(err.message);
+          res.status(500).json({ error: "Internal server error" });
+        } else {
+          const items = rows;
+          const total = result.total;
+          res.json({ items, total });
+        }
+      });
     }
   });
 });

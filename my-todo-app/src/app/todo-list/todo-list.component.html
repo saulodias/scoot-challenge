@@ -1,40 +1,64 @@
-<p-dataView [value]="todos">
-    <p-header>
-        Todo Items
-    </p-header>
-    <!-- <ng-template let-todo pTemplate="listItem">
-    <div class="p-grid p-justify-between">
-      <div class="p-col-12 p-md-4">
-        <p>{{ todo.description }}</p>
-      </div>
-      <div class="p-col-12 p-md-4">
-        <p>{{ todo.dueDate }}</p>
-      </div>
-      <div class="p-col-12 p-md-4">
-        <p [ngClass]="getPriorityClass(todo.priority)">
-          {{ getPriorityText(todo.priority) }}
-        </p>
-      </div>
-    </div>
-  </ng-template> -->
-
-    <ng-template let-todo pTemplate="listItem">
-        <div class="col-12">
-            <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
-                <div
-                    class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
-                    <div class="flex flex-column align-items-center sm:align-items-start gap-3">
-                        <div class="text-2xl font-bold text-900">Due date: {{ todo.dueDate }}</div>
-                        <div class="flex align-items-center gap-3">
-                            <span class="flex align-items-center gap-2">
-                                <i class="pi pi-tag"></i>
-                                <span class="font-semibold">{{ todo.description }}</span>
-                            </span>
-                            <p-tag [value]="getPriorityText(todo.priority)" [severity]="getPriorityText(todo.priority)"></p-tag>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<p-table [value]="todos" [lazy]="true" (onLazyLoad)="loadTodos($event)" dataKey="id"
+    [tableStyle]="{ 'min-width': '60rem' }" [paginator]="true" [rows]="limit" [totalRecords]="total">
+    <ng-template pTemplate="caption">
+        <div class="flex align-items-center justify-content-between">
+            To Do's
         </div>
     </ng-template>
-</p-dataView>
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Description
+            </th>
+            <th>Due Date</th>
+            <th>Priority</th>
+        </tr>
+        <tr>
+            <th>
+                <p-columnFilter field="description" matchMode="contains" [showMenu]="false">
+                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                        <input type="text" pInputText [ngModel]="descriptionFilter" (ngModelChange)="filter($event)"
+                            class="p-inputtext">
+
+                    </ng-template>
+                </p-columnFilter>
+            </th>
+            <th>
+            </th>
+            <th>
+                <p-columnFilter field="priority" matchMode="contains" [showMenu]="false">
+                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                        <p-dropdown [options]="priorityOptions" [ngModel]="priorityFilter"
+                            (ngModelChange)="filter($event.code)" optionLabel="name">
+                            <ng-template pTemplate="item" let-option>
+                                <span *ngIf="option.code == null; else elseBlock">All</span>
+                                <ng-template #elseBlock><p-tag [value]="getPriorityText(option.code)"
+                                        [severity]="getStatusSeverity(option.code)"></p-tag>
+                                </ng-template>
+                            </ng-template>
+                        </p-dropdown>
+                    </ng-template>
+                </p-columnFilter>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-todo>
+        <tr>
+            <td>{{todo.description}}</td>
+            <td>{{todo.dueDate}}</td>
+            <td><p-tag [value]="getPriorityText(todo.priority)" [severity]="getStatusSeverity(todo.priority)"></p-tag>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+        <div class="flex align-items-center justify-content-between">
+            In total there are {{total}} todos.
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="paginatorleft">
+        <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+    </ng-template>
+    <ng-template pTemplate="paginatorright">
+        <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
+    </ng-template>
+</p-table>

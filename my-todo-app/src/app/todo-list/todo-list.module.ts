@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TodoListComponent } from './todo-list.component';
-import { DataViewModule } from 'primeng/dataview';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
-
+import { DropdownModule } from 'primeng/dropdown';
 
 
 @NgModule({
@@ -12,7 +14,10 @@ import { TagModule } from 'primeng/tag';
   ],
   imports: [
     CommonModule,
-    DataViewModule,
+    FormsModule,
+    ButtonModule,
+    DropdownModule,
+    TableModule,
     TagModule
   ],
   exports: [

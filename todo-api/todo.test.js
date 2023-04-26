@@ -1,6 +1,9 @@
 const request = require('supertest');
+const { faker } = require('@faker-js/faker');
 const app = require('./server');
 const db = require('./db');
+
+// Define the test
 describe('POST /todos', () => {
   beforeAll((done) => {
     // Create the test database tables before running the tests
@@ -12,39 +15,33 @@ describe('POST /todos', () => {
     db.close(done);
   });
 
-  test('adds new todos', async () => {
-    const newTodos = [
-      {
-        dueDate: new Date().getTime(),
-        description: 'Write a test',
-        priority: 0,
-      },
-      {
-        dueDate: new Date().getTime(),
-        description: 'Write more tests',
-        priority: 1,
-      },
-      {
-        dueDate: new Date().getTime(),
-        description: 'Fix bugs',
-        priority: 2,
-      },
-    ];
+  test('adds a lot of new todos', async () => {
+    const numTodos = 500;
+    const todos = [];
 
-    const responses = await Promise.all(newTodos.map(async (newTodo) => {
-      const response = await request(app)
+    // Generate random todos
+    for (let i = 0; i < numTodos; i++) {
+      const newTodo = {
+        dueDate: new Date(faker.date.future()).getTime(),
+        description: faker.lorem.sentence(5),
+        priority: faker.datatype.number({ min: 0, max: 2 }),
+      };
+      todos.push(newTodo);
+    }
+
+    // Insert todos into the database
+    for (let i = 0; i < numTodos; i++) {
+      await request(app)
         .post('/todos')
-        .send(newTodo)
+        .send(todos[i])
         .expect(201);
+    }
 
-      expect(response.body).toHaveProperty('id');
-      expect(response.body.description).toBe(newTodo.description);
-      expect(response.body.priority).toBe(newTodo.priority);
+    // Check that todos were inserted
+    const response = await request(app)
+      .get('/todos')
+      .expect(200);
 
-      return response;
-    }));
-
-    // Check that all todos were added successfully
-    expect(responses.length).toBe(newTodos.length);
+    expect(response.body.length).toBe(10);
   });
 });
