@@ -8,6 +8,7 @@ import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
 import { MessageService } from 'primeng/api';
 import { CalendarModule } from 'primeng/calendar';
+import { DialogModule } from 'primeng/dialog';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { CalendarModule } from 'primeng/calendar';
     ButtonModule,
     DropdownModule,
     CalendarModule,
+    DialogModule,
     TableModule,
     TagModule
   ],

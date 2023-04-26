@@ -37,6 +37,13 @@ export class TodoServerService {
     });
   }
 
+  saveTodo(todo: Todo) {
+    const dueDate = (todo.dueDate as Date).getTime();
+    const data = { ...todo, dueDate };
+
+    return this.http.post<Todo>(this.API_URL, data);
+  }
+
   updateTodo(id: string, todo: Todo) {
     const url = `${this.API_URL}/${id}`;
     const dueDate = (todo.dueDate as Date).getTime();

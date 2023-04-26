@@ -11,7 +11,8 @@
             <th>Due Date</th>
             <th>Priority</th>
             <th>
-                <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+                <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"
+                    (click)="showNewTodoDialog()" label="Add Item"></p-button>
             </th>
         </tr>
         <tr>
@@ -108,3 +109,19 @@
         </div>
     </ng-template>
 </p-table>
+
+<p-dialog header="Add New To Do" [(visible)]="newTodoDialogVisible" style="width: 40rem; height: 15rem">
+    <div class="flex flex-wrap justify-content-between gap-2">
+        <input pInputText type="text" class="p-inputtext w-full" [(ngModel)]="newTodo.description">
+        <div class="flex flex-row justify-content-start gap-2">
+            <p-calendar appendTo="body" [(ngModel)]="newTodo.dueDate" direction="down"></p-calendar>
+            <p-dropdown appendTo="body" [options]="priorityOptions" [(ngModel)]="newTodo.priority" optionLabel="name"
+                optionValue="code">
+                <ng-template pTemplate="item" let-option>
+                    <p-tag [value]="getPriorityText(option.code)" [severity]="getPrioritySeverity(option.code)"></p-tag>
+                </ng-template>
+            </p-dropdown>
+        </div>
+        <p-button label="Save" icon="pi pi-check" (click)="saveTodo()"></p-button>
+    </div>
+</p-dialog>

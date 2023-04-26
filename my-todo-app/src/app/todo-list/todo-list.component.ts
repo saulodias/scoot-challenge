@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import PriorityEnum from '../enums/priority.enum';
 import Todo from '../interfaces/todo.interface';
 import { TodoServerService } from '../services/todo-server.service';
-import PriorityEnum from '../enums/priority.enum';
-import { ConfirmationService, MessageService } from 'primeng/api';
 
 const idError = new Error('A valid id must be provided.');
 
@@ -11,12 +11,19 @@ const idError = new Error('A valid id must be provided.');
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.css'],
 })
-export class TodoListComponent implements OnInit {
+export class TodoListComponent {
   todos: Todo[] = [];
   first = 0;
   limit = 10;
   total = 0;
   filters = { description: { value: '' }, priority: { value: undefined } };
+
+  newTodoDialogVisible = false;
+  newTodo: Todo = {
+    description: '',
+    dueDate: new Date(),
+    priority: PriorityEnum.NORMAL,
+  };
 
   descriptionFilter = '';
   priorityFilter: PriorityEnum | null = null;
@@ -29,7 +36,7 @@ export class TodoListComponent implements OnInit {
 
   priorityFilterOptions = [
     { name: 'All', code: null },
-    ...this.priorityOptions
+    ...this.priorityOptions,
   ];
 
   clonedTodos: { [key: string]: Todo } = {};
@@ -39,8 +46,6 @@ export class TodoListComponent implements OnInit {
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
-
-  ngOnInit() {}
 
   loadTodos(event?: any) {
     if (event?.filters) {
@@ -147,7 +152,7 @@ export class TodoListComponent implements OnInit {
   priorityChange(priority: number, todo: Todo) {
     if (todo.id == null) throw idError;
 
-    this.clonedTodos[todo.id].priority =  priority;
+    this.clonedTodos[todo.id].priority = priority;
   }
 
   onRowEditCancel(todo: Todo, index: number) {
@@ -155,5 +160,40 @@ export class TodoListComponent implements OnInit {
 
     this.todos[index] = this.clonedTodos[todo.id];
     delete this.clonedTodos[todo.id];
+  }
+
+  saveTodo() {
+    this.todoServerService.saveTodo(this.newTodo).subscribe({
+      next: (response) => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Info',
+          detail: `Succesfully saved new item 
+          with ${this.getPriorityText(
+            response.priority
+          )} priority and due on ${new Date(
+            response.dueDate
+          ).toLocaleDateString()}.`,
+        });
+        
+        this.newTodo = {
+          description: '',
+          dueDate: new Date(),
+          priority: PriorityEnum.NORMAL,
+        };
+
+        this.loadTodos();
+      },
+      error: (error) =>
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error?.error?.error,
+        }),
+    });
+  }
+
+  showNewTodoDialog() {
+    this.newTodoDialogVisible = true;
   }
 }

@@ -12,7 +12,7 @@ router.post("/", (req, res) => {
   } else {
     db.run(
       "INSERT INTO todos (description, dueDate, priority) VALUES (?, ?, ?)",
-      [description, dueDate, priority],
+      [description, new Date(dueDate).getTime(), priority],
       function (err) {
         if (err) {
           console.error(err.message);
