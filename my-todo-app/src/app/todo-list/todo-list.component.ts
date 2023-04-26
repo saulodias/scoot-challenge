@@ -182,6 +182,8 @@ export class TodoListComponent {
           priority: PriorityEnum.NORMAL,
         };
 
+        this.newTodoDialogVisible = false;
+
         this.loadTodos();
       },
       error: (error) =>
