@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import Todo from '../interfaces/todo.interface';
 import { TodoServerService } from '../services/todo-server.service';
 import PriorityEnum from '../enums/priority.enum';
+import { MessageService } from 'primeng/api';
+
+const idError = new Error('A valid id must be provided.');
 
 @Component({
   selector: 'app-todo-list',
@@ -10,6 +13,7 @@ import PriorityEnum from '../enums/priority.enum';
 })
 export class TodoListComponent implements OnInit {
   todos: Todo[] = [];
+  first = 0;
   limit = 10;
   total = 0;
   filters = { description: { value: '' }, priority: { value: undefined } };
@@ -24,26 +28,36 @@ export class TodoListComponent implements OnInit {
     { name: 'Low', code: PriorityEnum.LOW },
   ];
 
-  constructor(private todoServerService: TodoServerService) {}
+  clonedTodos: { [key: string]: Todo } = {};
+
+  constructor(
+    private todoServerService: TodoServerService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit() {}
 
-  loadTodos(event: any) {
-    if (event.filters) {
+  loadTodos(event?: any) {
+    if (event?.filters) {
       this.filters = event.filters;
     }
-    
+
+    if (event?.first != null) {
+      this.first = event.first;
+    }
+
     this.todoServerService
       .getAllTodos(
-        event.first,
+        event?.first ?? this.first,
         this.limit,
         this.filters?.description?.value,
-        this.filters?.priority?.value,
+        this.filters?.priority?.value
       )
       .subscribe((response) => {
         this.total = response.total;
         this.todos = response.items.map((todo) => {
           return {
+            id: todo.id,
             description: todo.description,
             dueDate: new Date(todo.dueDate).toLocaleDateString(),
             priority: todo.priority,
@@ -53,10 +67,6 @@ export class TodoListComponent implements OnInit {
   }
 
   filter(event: any) {}
-
-  getPriority(completed: boolean): PriorityEnum {
-    return completed ? PriorityEnum.LOW : PriorityEnum.NORMAL;
-  }
 
   getPriorityText(priority: PriorityEnum): string {
     switch (priority) {
@@ -71,7 +81,7 @@ export class TodoListComponent implements OnInit {
     }
   }
 
-  getStatusSeverity(priority: PriorityEnum): string {
+  getPrioritySeverity(priority: PriorityEnum): string {
     switch (priority) {
       case PriorityEnum.HIGH:
         return 'danger';
@@ -82,5 +92,34 @@ export class TodoListComponent implements OnInit {
       default:
         return 'primary';
     }
+  }
+
+  onRowEditInit(todo: Todo) {
+    if (todo.id == null) throw idError;
+
+    this.clonedTodos[todo.id] = { ...todo };
+  }
+
+  onRowEditSave(todo: Todo) {
+    if (todo.id == null) throw idError;
+
+    delete this.clonedTodos[todo.id];
+
+    this.todoServerService.updateTodo(todo.id, todo).subscribe((response) => {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Info',
+        detail: response.message,
+      });
+
+      this.loadTodos();
+    });
+  }
+
+  onRowEditCancel(todo: Todo, index: number) {
+    if (todo.id == null) throw idError;
+
+    this.todos[index] = this.clonedTodos[todo.id];
+    delete this.clonedTodos[todo.id];
   }
 }

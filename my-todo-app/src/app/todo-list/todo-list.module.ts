@@ -6,6 +6,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DropdownModule } from 'primeng/dropdown';
+import { MessageService } from 'primeng/api';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { DropdownModule } from 'primeng/dropdown';
   ],
   exports: [
     TodoListComponent
-  ]
+  ],
+  providers: [MessageService]
 })
 export class TodoListModule { }

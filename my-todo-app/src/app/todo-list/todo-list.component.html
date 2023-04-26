@@ -1,4 +1,4 @@
-<p-table [value]="todos" [lazy]="true" (onLazyLoad)="loadTodos($event)" dataKey="id"
+<p-table [value]="todos" [lazy]="true" (onLazyLoad)="loadTodos($event)" editMode="row" dataKey="id"
     [tableStyle]="{ 'min-width': '60rem' }" [paginator]="true" [rows]="limit" [totalRecords]="total">
     <ng-template pTemplate="caption">
         <div class="flex align-items-center justify-content-between">
@@ -7,10 +7,12 @@
     </ng-template>
     <ng-template pTemplate="header">
         <tr>
-            <th>Description
-            </th>
+            <th>Description</th>
             <th>Due Date</th>
             <th>Priority</th>
+            <th>
+                <p-button hidden type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+            </th>
         </tr>
         <tr>
             <th>
@@ -18,7 +20,6 @@
                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                         <input type="text" pInputText [ngModel]="descriptionFilter" (ngModelChange)="filter($event)"
                             class="p-inputtext">
-
                     </ng-template>
                 </p-columnFilter>
             </th>
@@ -32,20 +33,44 @@
                             <ng-template pTemplate="item" let-option>
                                 <span *ngIf="option.code == null; else elseBlock">All</span>
                                 <ng-template #elseBlock><p-tag [value]="getPriorityText(option.code)"
-                                        [severity]="getStatusSeverity(option.code)"></p-tag>
+                                        [severity]="getPrioritySeverity(option.code)"></p-tag>
                                 </ng-template>
                             </ng-template>
                         </p-dropdown>
                     </ng-template>
                 </p-columnFilter>
             </th>
+            <th></th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-todo>
-        <tr>
-            <td>{{todo.description}}</td>
+    <ng-template pTemplate="body" let-todo let-editing="editing" let-index="rowIndex">
+        <tr [pEditableRow]="todo">
+            <td>
+                <p-cellEditor style="width: 100%;">
+                    <ng-template pTemplate="input">
+                        <input pInputText type="text" class="p-inputtext" [(ngModel)]="todo.description" required
+                            style="width: 100%;">
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{todo.description}}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
             <td>{{todo.dueDate}}</td>
-            <td><p-tag [value]="getPriorityText(todo.priority)" [severity]="getStatusSeverity(todo.priority)"></p-tag>
+            <td>
+                <p-tag [value]="getPriorityText(todo.priority)" [severity]="getPrioritySeverity(todo.priority)"></p-tag>
+            </td>
+            <td>
+                <div class="flex align-items-center justify-content-center gap-2">
+                    <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
+                        (click)="onRowEditInit(todo)" class="p-button-rounded p-button-text"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                        (click)="onRowEditSave(todo)"
+                        class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                    <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                        (click)="onRowEditCancel(todo, index)"
+                        class="p-button-rounded p-button-text p-button-danger"></button>
+                </div>
             </td>
         </tr>
     </ng-template>
@@ -53,12 +78,5 @@
         <div class="flex align-items-center justify-content-between">
             In total there are {{total}} todos.
         </div>
-    </ng-template>
-
-    <ng-template pTemplate="paginatorleft">
-        <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
-    </ng-template>
-    <ng-template pTemplate="paginatorright">
-        <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
     </ng-template>
 </p-table>
