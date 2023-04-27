@@ -2,6 +2,8 @@
 
 Disclaimer: The work completed in the 2-hour-window given for this challenge is now in the [2-hour-window-work branch](https://github.com/saulodias/scoot-challenge/tree/2-hour-window-work).
 
+![Screenshot of the App](https://user-images.githubusercontent.com/35342506/234730130-d75fffc4-2fae-4b3d-b97f-df6073245022.png)
+
 This is a simple Todo List web application built with Angular and an API built with Node.js and Express. It allows users to create, read, update, and delete their todo items.
 
 ## Features
